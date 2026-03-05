@@ -1,0 +1,107 @@
+[
+  {
+    "amount": 18000,
+    "category": "Makanan",
+    "date": "2026-03-03",
+    "description": "Nasi Empal Udang Goreng (pagi)",
+    "id": 1772598532805
+  },
+  {
+    "amount": 16000,
+    "category": "Makanan",
+    "date": "2026-03-03",
+    "description": "Mie Guna Mie Ayam (siang)",
+    "id": 1772598579995
+  },
+  {
+    "amount": 1500,
+    "category": "Makanan",
+    "date": "2026-03-03",
+    "description": "Dadar Jagung",
+    "id": 1772598589643
+  },
+  {
+    "amount": 12000,
+    "category": "Makanan",
+    "date": "2026-03-03",
+    "description": "Nasi Ayam Serundeng + Udang Tepung",
+    "id": 1772598621883
+  },
+  {
+    "amount": 1800,
+    "category": "Makanan",
+    "date": "2026-03-03",
+    "description": "Kopi",
+    "id": 1772598632871
+  },
+  {
+    "amount": 10000,
+    "category": "Makanan",
+    "date": "2026-03-03",
+    "description": "Biscuit",
+    "id": 1772598639803
+  },
+  {
+    "amount": 7600,
+    "category": "Makanan",
+    "date": "2026-03-03",
+    "description": "Pia Cokelat (4x)",
+    "id": 1772598668469
+  },
+  {
+    "amount": 1200,
+    "category": "Makanan",
+    "date": "2026-03-04",
+    "description": "Kopi",
+    "id": 1772598719010
+  },
+  {
+    "amount": 18000,
+    "category": "Makanan",
+    "date": "2026-03-04",
+    "description": "Chicken Crispy (KanPus)",
+    "id": 1772598735735
+  },
+  {
+    "amount": 43000,
+    "category": "Makanan",
+    "date": "2026-03-04",
+    "description": "Ayam Terlus Asin Ah Kun",
+    "id": 1772681925677
+  },
+  {
+    "amount": 8000,
+    "category": "Makanan",
+    "date": "2026-03-04",
+    "description": "Lemon Tea Gopek",
+    "id": 1772681943322
+  },
+  {
+    "amount": 6000,
+    "category": "Makanan",
+    "date": "2026-03-04",
+    "description": "Air Mineral",
+    "id": 1772682031606
+  },
+  {
+    "amount": 17000,
+    "category": "Makanan",
+    "date": "2026-03-04",
+    "description": "Tamie + Nugget",
+    "id": 1772682047490
+  },
+  {
+    "amount": 7000,
+    "category": "Tugas/Kuliah",
+    "date": "2026-03-03",
+    "description": "Bolpen",
+    "id": 1772682210407
+  },
+  {
+    "amount": 600,
+    "category": "Makanan",
+    "date": "2026-03-05",
+    "description": "Kopi",
+    "id": 1772682227627
+  }
+]

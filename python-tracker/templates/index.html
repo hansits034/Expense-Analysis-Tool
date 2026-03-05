@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Spendings</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 p-4 md:p-8 min-h-screen">
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">My Spendings</h1>
+                <p class="text-slate-500 mt-1 font-medium">Spending Analysis Tool</p>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 bg-white px-5 py-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <div class="bg-indigo-100 p-2.5 rounded-xl">
+                        <i data-lucide="wallet" class="w-6 h-6 text-indigo-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Bulan Ini</p>
+                        <p class="text-xl font-black text-slate-900 leading-tight" id="total-spent">Rp 0</p>
+                    </div>
+                </div>
+                <button onclick="shutdownServer()" class="p-3.5 bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white rounded-2xl transition-all shadow-sm group" title="Matikan Server">
+                    <i data-lucide="power" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-4 space-y-6">
+                
+                <div class="bg-white rounded-[2rem] p-7 shadow-sm border border-slate-200/60">
+                    <h2 class="text-lg font-bold flex items-center gap-2 mb-6 text-slate-800">
+                        <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-500"></i> Tambah Catatan
+                    </h2>
+                    
+                    <form id="expense-form" class="space-y-4">
+                        <div>
+                            <label class="text-sm font-semibold text-slate-600 flex items-center gap-2 mb-1.5"><i data-lucide="calendar" class="w-4 h-4"></i> Tanggal</label>
+                            <input type="date" id="date" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-medium" required>
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-slate-600 flex items-center gap-2 mb-1.5"><span class="font-bold text-slate-400">Rp</span> Nominal</label>
+                            <input type="number" id="amount" placeholder="Contoh: 15000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-medium" required>
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-slate-600 flex items-center gap-2 mb-1.5"><i data-lucide="tag" class="w-4 h-4"></i> Kategori</label>
+                            <select id="category" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-medium">
+                                <option>Makanan</option><option>Transportasi</option><option>Tugas/Kuliah</option>
+                                <option>Kos/Tagihan</option><option>Hiburan</option><option>Lainnya</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-slate-600 flex items-center gap-2 mb-1.5"><i data-lucide="receipt" class="w-4 h-4"></i> Keterangan</label>
+                            <input type="text" id="description" placeholder="Makan ayam geprek..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-medium" required>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold shadow-md shadow-indigo-200 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-2">
+                            Simpan Pengeluaran
+                        </button>
+                    </form>
+                </div>
+
+                <div id="insight-card" class="rounded-[2rem] p-7 shadow-sm border transition-colors duration-300">
+                    <div class="flex items-start gap-4">
+                        <div id="insight-icon-container" class="p-3.5 rounded-2xl">
+                            <i id="insight-icon" data-lucide="check-circle-2" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Rata-rata Harian</h3>
+                            <p class="text-2xl font-black text-slate-900 leading-tight" id="daily-avg">Rp 0</p>
+                            <p class="text-sm mt-1 font-semibold" id="insight-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-7 rounded-[2rem] shadow-sm border border-slate-200/60 flex flex-col">
+                        <h2 class="text-lg font-bold mb-6 flex items-center gap-2 text-slate-800">
+                            <i data-lucide="trending-up" class="w-5 h-5 text-indigo-500"></i> Tren Harian
+                        </h2>
+                        <div class="relative w-full flex-1 min-h-[220px]">
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-7 rounded-[2rem] shadow-sm border border-slate-200/60 flex flex-col">
+                        <h2 class="text-lg font-bold mb-6 flex items-center gap-2 text-slate-800">
+                            <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-500"></i> Distribusi Kategori
+                        </h2>
+                        <div class="relative w-full flex-1 min-h-[220px] flex justify-center items-center">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[2rem] p-7 shadow-sm border border-slate-200/60">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="list" class="w-5 h-5 text-indigo-500"></i> Riwayat Terakhir
+                        </h2>
+                        <span id="tx-count" class="bg-slate-100 text-slate-600 text-[11px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">0 Transaksi</span>
+                    </div>
+                    
+                    <div id="history-list" class="space-y-3 max-h-[350px] overflow-y-auto custom-scrollbar pr-2">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        document.getElementById('date').valueAsDate = new Date();
+
+        let expenses = [];
+        let lineChartInstance = null;
+        let pieChartInstance = null;
+        const BASELINE = 75000;
+
+        // Palet
+        const categoryColors = { 
+            'Makanan': '#3b82f6',       // Blue
+            'Transportasi': '#10b981',  // Emerald
+            'Tugas/Kuliah': '#8b5cf6',  // Violet
+            'Kos/Tagihan': '#f59e0b',   // Amber
+            'Hiburan': '#ec4899',       // Pink
+            'Lainnya': '#64748b'        // Slate
+        };
+
+        const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+
+        async function loadData() {
+            try {
+                const res = await fetch('/api/expenses');
+                expenses = await res.json();
+                updateUI();
+            } catch(e) { console.error("Gagal memuat data", e); }
+        }
+
+        async function saveData() {
+            try {
+                await fetch('/api/expenses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(expenses)
+                });
+                updateUI();
+            } catch(e) { console.error("Gagal menyimpan data", e); }
+        }
+
+        document.getElementById('expense-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newExp = {
+                id: Date.now(),
+                date: document.getElementById('date').value,
+                amount: parseInt(document.getElementById('amount').value),
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value
+            };
+            expenses.push(newExp);
+
+            document.getElementById('amount').value = '';
+            document.getElementById('description').value = '';
+            saveData();
+        });
+
+        window.deleteExpense = function(id) {
+            expenses = expenses.filter(exp => exp.id !== id);
+            saveData();
+        }
+
+        function updateUI() {
+            const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+            document.getElementById('total-spent').innerText = formatRp(total);
+            document.getElementById('tx-count').innerText = `${expenses.length} Transaksi`;
+
+            const historyDiv = document.getElementById('history-list');
+            
+            if (expenses.length === 0) {
+                historyDiv.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                            <i data-lucide="receipt" class="w-8 h-8 text-slate-300"></i>
+                        </div>
+                        <p class="text-slate-500 font-semibold">Belum ada pengeluaran.</p>
+                        <p class="text-slate-400 text-sm mt-1">Mulai catat jajan pertamamu hari ini!</p>
+                    </div>`;
+            } else {
+                const historyHTML = [...expenses].reverse().map(exp => {
+                    const color = categoryColors[exp.category] || '#64748b';
+
+                    const dateObj = new Date(exp.date);
+                    const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                    
+                    return `
+                    <div class="group flex justify-between items-center p-4 bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl transition-all gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-2.5 h-10 rounded-full" style="background-color: ${color}"></div>
+                            <div>
+                                <p class="font-bold text-slate-800 text-[15px] leading-tight mb-1">${exp.description}</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[11px] font-semibold text-slate-500">${dateStr}</span>
+                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider" style="background-color: ${color}15; color: ${color}">${exp.category}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <p class="font-black text-slate-800 text-[17px]">-${formatRp(exp.amount)}</p>
+                            <button onclick="deleteExpense(${exp.id})" class="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+                historyDiv.innerHTML = historyHTML;
+            }
+            lucide.createIcons();
+
+            const uniqueDays = new Set(expenses.map(e => e.date)).size || 1;
+            const avg = expenses.length > 0 ? Math.round(total / uniqueDays) : 0;
+            document.getElementById('daily-avg').innerText = formatRp(avg);
+            
+            const insightCard = document.getElementById('insight-card');
+            const insightText = document.getElementById('insight-text');
+            const iconContainer = document.getElementById('insight-icon-container');
+            
+            if (avg > BASELINE) {
+                insightCard.className = "rounded-[2rem] p-7 shadow-sm border transition-colors duration-300 bg-rose-50 border-rose-100";
+                insightText.className = "text-sm mt-1 font-semibold text-rose-600";
+                insightText.innerText = `Kamu overbudget! Batas harian ${formatRp(BASELINE)}.`;
+                iconContainer.className = "p-3.5 rounded-2xl bg-rose-100 text-rose-600";
+                document.getElementById('insight-icon').setAttribute('data-lucide', 'alert-circle');
+            } else {
+                insightCard.className = "rounded-[2rem] p-7 shadow-sm border transition-colors duration-300 bg-emerald-50 border-emerald-100";
+                insightText.className = "text-sm mt-1 font-semibold text-emerald-600";
+                insightText.innerText = "Bagus! Pengeluaran masih di bawah batas aman.";
+                iconContainer.className = "p-3.5 rounded-2xl bg-emerald-100 text-emerald-600";
+                document.getElementById('insight-icon').setAttribute('data-lucide', 'check-circle-2');
+            }
+            lucide.createIcons(); 
+
+            updateCharts();
+        }
+
+        function updateCharts() {
+            const daily = {};
+            expenses.forEach(e => daily[e.date] = (daily[e.date] || 0) + e.amount);
+            const labelsLine = Object.keys(daily).sort().map(d => {
+                const dt = new Date(d);
+                return `${dt.getDate()} ${dt.toLocaleString('id-ID', { month: 'short' })}`;
+            });
+            const dataLine = Object.keys(daily).sort().map(d => daily[d]);
+
+
+            const catData = {};
+            expenses.forEach(e => catData[e.category] = (catData[e.category] || 0) + e.amount);
+            const labelsPie = Object.keys(catData);
+            const dataPie = labelsPie.map(c => catData[c]);
+            const bgPie = labelsPie.map(c => categoryColors[c] || '#64748b');
+
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
+
+            if(lineChartInstance) lineChartInstance.destroy();
+            lineChartInstance = new Chart(document.getElementById('lineChart'), {
+                type: 'line',
+                data: { 
+                    labels: labelsLine, 
+                    datasets: [{ 
+                        label: 'Pengeluaran', 
+                        data: dataLine, 
+                        borderColor: '#6366f1', 
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#6366f1',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.2 
+                    }] 
+                },
+                options: { 
+                    responsive: true,
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { beginAtZero: true, border: {display: false}, grid: {color: '#f1f5f9'} },
+                        x: { border: {display: false}, grid: {display: false} }
+                    } 
+                }
+            });
+
+            if(pieChartInstance) pieChartInstance.destroy();
+            pieChartInstance = new Chart(document.getElementById('pieChart'), {
+                type: 'doughnut',
+                data: { 
+                    labels: labelsPie, 
+                    datasets: [{ data: dataPie, backgroundColor: bgPie, borderWidth: 0 }] 
+                },
+                options: { 
+                    responsive: true,
+                    maintainAspectRatio: false, 
+                    cutout: '75%', 
+                    plugins: { 
+                        legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, padding: 15, font: {size: 11, weight: 'bold'} } }
+                    }
+                }
+            });
+        }
+
+        window.shutdownServer = async function() {
+            if(confirm('Matikan server Python dan tutup aplikasi?')) {
+                try {
+                    await fetch('/api/shutdown', { method: 'POST' });
+                    document.body.innerHTML = `
+                        <div class="flex flex-col h-screen items-center justify-center bg-slate-50 space-y-4">
+                            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center border-4 border-white shadow-sm">
+                                <i data-lucide="power" class="w-10 h-10"></i>
+                            </div>
+                            <h1 class="text-2xl font-bold text-slate-800">Server Berhasil Dimatikan</h1>
+                            <p class="text-slate-500 font-medium">Silakan tutup tab browser ini.</p>
+                        </div>`;
+                    lucide.createIcons();
+                } catch(e) { console.error("Gagal mematikan", e); }
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

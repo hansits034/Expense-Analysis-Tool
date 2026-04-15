@@ -3,135 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Spendings</title>
+    <title>My Expenses</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 p-4 md:p-8 min-h-screen">
-    <div class="max-w-7xl mx-auto space-y-8">
+<body class="bg-slate-50 text-slate-800 p-2 md:p-4 min-h-screen">
+    <div class="max-w-7xl mx-auto space-y-4 relative">
         
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <header class="flex flex-col md:flex-row justify-between items-center gap-2">
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">My Spendings</h1>
-                <p class="text-slate-500 mt-1 font-medium">Spending Analysis Tool</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">My Expenses</h1>
             </div>
             
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-3 bg-white px-5 py-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
-                    <div class="bg-indigo-100 p-2.5 rounded-xl">
-                        <i data-lucide="wallet" class="w-6 h-6 text-indigo-600"></i>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-slate-200/80 shadow-sm">
+                    <div class="bg-indigo-100 p-1.5 rounded-lg">
+                        <i data-lucide="wallet" class="w-5 h-5 text-indigo-600"></i>
                     </div>
                     <div>
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Bulan Ini</p>
-                        <p class="text-xl font-black text-slate-900 leading-tight" id="total-spent">Rp 0</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total (Filter)</p>
+                        <p class="text-lg font-black text-slate-900 leading-none" id="total-spent">Rp 0</p>
                     </div>
                 </div>
-                <button onclick="shutdownServer()" class="p-3.5 bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white rounded-2xl transition-all shadow-sm group" title="Matikan Server">
-                    <i data-lucide="power" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+                <button onclick="shutdownServer()" class="p-2.5 bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm group" title="Matikan Server">
+                    <i data-lucide="power" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
                 </button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
             
-            <div class="lg:col-span-4 space-y-6">
+            <div class="lg:col-span-4 space-y-4">
                 
-                <div class="bg-white rounded-[2rem] p-7 shadow-sm border border-slate-200/60">
-                    <h2 class="text-lg font-bold flex items-center gap-2 mb-6 text-slate-800">
-                        <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-500"></i> Tambah Catatan
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200/60">
+                    <h2 class="text-base font-bold flex items-center gap-2 mb-4 text-slate-800">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-500"></i> Tambah Catatan
                     </h2>
                     
-                    <form id="expense-form" class="space-y-4">
-                        <div>
-                            <label class="text-sm font-semibold text-slate-600 flex items-center gap-2 mb-1.5"><i data-lucide="calendar" class="w-4 h-4"></i> Tanggal</label>
-                            <input type="date" id="date" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-medium" required>
+                    <form id="expense-form" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-semibold text-slate-600 flex items-center gap-1.5 mb-1"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Tanggal</label>
+                                <input type="date" id="date" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-xs font-medium" required>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-slate-600 flex items-center gap-1.5 mb-1"><i data-lucide="tag" class="w-3.5 h-3.5"></i> Kategori</label>
+                                <select id="category" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-xs font-medium">
+                                    <option>Makanan</option><option>Transportasi</option><option>Tugas/Kuliah</option>
+                                    <option>Kos/Tagihan</option><option>Hiburan</option><option>Investment</option><option>Lainnya</option>
+                                </select>
+                            </div>
                         </div>
                         
                         <div>
-                            <label class="text-sm font-semibold text-slate-600 flex items-center gap-2 mb-1.5"><span class="font-bold text-slate-400">Rp</span> Nominal</label>
-                            <input type="number" id="amount" placeholder="Contoh: 15000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-medium" required>
+                            <label class="text-xs font-semibold text-slate-600 flex items-center gap-1.5 mb-1"><span class="font-bold text-slate-400">Rp</span> Nominal</label>
+                            <input type="number" id="amount" placeholder="Contoh: 15000" class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-xs font-medium" required>
                         </div>
                         
                         <div>
-                            <label class="text-sm font-semibold text-slate-600 flex items-center gap-2 mb-1.5"><i data-lucide="tag" class="w-4 h-4"></i> Kategori</label>
-                            <select id="category" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-medium">
-                                <option>Makanan</option><option>Transportasi</option><option>Tugas/Kuliah</option>
-                                <option>Kos/Tagihan</option><option>Hiburan</option><option>Lainnya</option>
-                            </select>
+                            <label class="text-xs font-semibold text-slate-600 flex items-center gap-1.5 mb-1"><i data-lucide="receipt" class="w-3.5 h-3.5"></i> Keterangan</label>
+                            <input type="text" id="description" placeholder="Makan ayam geprek..." class="w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-xs font-medium" required>
                         </div>
                         
-                        <div>
-                            <label class="text-sm font-semibold text-slate-600 flex items-center gap-2 mb-1.5"><i data-lucide="receipt" class="w-4 h-4"></i> Keterangan</label>
-                            <input type="text" id="description" placeholder="Makan ayam geprek..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-medium" required>
-                        </div>
-                        
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold shadow-md shadow-indigo-200 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-2">
-                            Simpan Pengeluaran
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-bold shadow-md shadow-indigo-200 transition-all active:scale-[0.98] mt-2 flex items-center justify-center gap-2">
+                            Simpan Data
                         </button>
                     </form>
                 </div>
 
-                <div id="insight-card" class="rounded-[2rem] p-7 shadow-sm border transition-colors duration-300">
-                    <div class="flex items-start gap-4">
-                        <div id="insight-icon-container" class="p-3.5 rounded-2xl">
-                            <i id="insight-icon" data-lucide="check-circle-2" class="w-6 h-6"></i>
+                <div id="insight-card" class="rounded-3xl p-4 shadow-sm border transition-colors duration-300 relative group">
+                    <button onclick="openBaselineModal()" class="absolute top-3 right-3 p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Atur Batas Harian">
+                        <i data-lucide="settings-2" class="w-4 h-4"></i>
+                    </button>
+                    
+                    <div class="flex items-center gap-3 pr-6">
+                        <div id="insight-icon-container" class="p-2.5 rounded-xl">
+                            <i id="insight-icon" data-lucide="check-circle-2" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <h3 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Rata-rata Harian</h3>
-                            <p class="text-2xl font-black text-slate-900 leading-tight" id="daily-avg">Rp 0</p>
-                            <p class="text-sm mt-1 font-semibold" id="insight-text"></p>
+                            <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Rata-rata Harian</h3>
+                            <p class="text-lg font-black text-slate-900 leading-tight" id="daily-avg">Rp 0</p>
+                            <p class="text-[11px] font-semibold" id="insight-text"></p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="lg:col-span-8 space-y-6">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-7 rounded-[2rem] shadow-sm border border-slate-200/60 flex flex-col">
-                        <h2 class="text-lg font-bold mb-6 flex items-center gap-2 text-slate-800">
-                            <i data-lucide="trending-up" class="w-5 h-5 text-indigo-500"></i> Tren Harian
-                        </h2>
-                        <div class="relative w-full flex-1 min-h-[220px]">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                    </div>
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200/60 flex flex-col h-[330px]">
+                    <h2 class="text-base font-bold mb-0 flex items-center gap-2 text-slate-800 shrink-0">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-500"></i> Kategori
+                    </h2>
                     
-                    <div class="bg-white p-7 rounded-[2rem] shadow-sm border border-slate-200/60 flex flex-col">
-                        <h2 class="text-lg font-bold mb-6 flex items-center gap-2 text-slate-800">
-                            <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-500"></i> Distribusi Kategori
-                        </h2>
-                        <div class="relative w-full flex-1 min-h-[220px] flex justify-center items-center">
+                    <div class="flex flex-col items-center justify-center mt-2">
+                        <div class="relative w-full max-w-[160px] aspect-square">
                             <canvas id="pieChart"></canvas>
                         </div>
                     </div>
+                    
+                    <div id="pie-legend" class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1 grid grid-cols-2 gap-x-2 gap-y-1 content-start">
+                        </div>
                 </div>
 
-                <div class="bg-white rounded-[2rem] p-7 shadow-sm border border-slate-200/60">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="list" class="w-5 h-5 text-indigo-500"></i> Riwayat Terakhir
+            </div>
+
+            <div class="lg:col-span-8 space-y-4 flex flex-col">
+                
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200/60 flex flex-col shrink-0">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
+                        <h2 class="text-base font-bold flex items-center gap-2 text-slate-800">
+                            <i data-lucide="trending-up" class="w-4 h-4 text-indigo-500"></i> Tren Pengeluaran
                         </h2>
-                        <span id="tx-count" class="bg-slate-100 text-slate-600 text-[11px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">0 Transaksi</span>
+                        
+                        <div class="flex items-center gap-2">
+                            <div id="custom-date-container" class="hidden items-center gap-1">
+                                <input type="date" id="start-date" class="py-1 px-2 bg-slate-50 border border-slate-200 rounded-lg outline-none text-xs" onchange="updateUI()">
+                                <span class="text-slate-400 font-bold text-xs">-</span>
+                                <input type="date" id="end-date" class="py-1 px-2 bg-slate-50 border border-slate-200 rounded-lg outline-none text-xs" onchange="updateUI()">
+                            </div>
+                            
+                            <select id="time-filter" onchange="applyFilter()" class="py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-lg outline-none text-xs font-bold text-slate-600 focus:ring-2 focus:ring-indigo-500/20">
+                                <option value="all" selected>Semua Waktu</option>
+                                <option value="week">1 Minggu</option>
+                                <option value="month">1 Bulan</option>
+                                <option value="year">1 Tahun</option>
+                                <option value="custom">Pilih...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="relative w-full min-h-[345px]">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200/60 flex flex-col h-[330px]">
+                    <div class="flex justify-between items-center mb-4 shrink-0">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="list" class="w-4 h-4 text-indigo-500"></i> Riwayat Transaksi
+                        </h2>
+                        <span id="tx-count" class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">0 Data</span>
                     </div>
                     
-                    <div id="history-list" class="space-y-3 max-h-[350px] overflow-y-auto custom-scrollbar pr-2">
+                    <div class="flex flex-col md:flex-row gap-2 mb-4 shrink-0">
+                        <div class="relative flex-1">
+                            <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400"></i>
+                            <input type="text" id="search-history" onkeyup="renderHistory()" placeholder="Cari keterangan atau kategori..." class="w-full pl-7 py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-lg outline-none text-xs focus:ring-2 focus:ring-indigo-500/20 transition-all">
                         </div>
+                        
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <input type="date" id="date-history" onchange="renderHistory()" class="flex-1 md:w-32 py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-lg outline-none text-[11px] text-slate-600 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                            
+                            <select id="sort-history" onchange="renderHistory()" class="flex-1 md:w-32 py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-lg outline-none text-[11px] font-semibold text-slate-600 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                                <option value="date-desc" selected>Terbaru</option>
+                                <option value="date-asc">Terlama</option>
+                                <option value="price-desc">Tertinggi</option>
+                                <option value="price-asc">Terendah</option>
+                            </select>
+
+                            <button onclick="resetHistoryFilters()" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-lg transition-colors shrink-0" title="Reset">
+                                <i data-lucide="x" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 min-h-0">
+                        <div id="history-list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 content-start">
+                            </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="baseline-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div id="baseline-modal-content" class="bg-white rounded-3xl p-6 shadow-2xl w-full max-w-sm transform scale-95 transition-all duration-300">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="target" class="w-5 h-5 text-indigo-500"></i> Atur Batas Harian
+                </h2>
+                <button onclick="closeBaselineModal()" class="text-slate-400 hover:text-rose-500 bg-slate-50 hover:bg-rose-50 p-1.5 rounded-lg transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Tentukan batas maksimal rata-rata pengeluaran harianmu. Garis merah akan muncul di grafik sebagai pengingat.
+                </p>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600 flex items-center gap-1.5 mb-1"><span class="font-bold text-slate-400">Rp</span> Nominal Maksimal</label>
+                    <input type="number" id="new-baseline-input" class="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-bold text-slate-800" placeholder="Misal: 75000">
+                </div>
+                
+                <div class="flex gap-3 mt-6 pt-2">
+                    <button onclick="closeBaselineModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-bold transition-all">Batal</button>
+                    <button onclick="saveBaseline()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-md shadow-indigo-200 transition-all">Simpan Batas</button>
                 </div>
             </div>
         </div>
@@ -144,19 +221,65 @@
         let expenses = [];
         let lineChartInstance = null;
         let pieChartInstance = null;
-        const BASELINE = 75000;
+        let currentFilter = 'all';
+        
+        let baselineLimit = localStorage.getItem('baselineLimit') ? parseInt(localStorage.getItem('baselineLimit')) : 75000;
 
-        // Palet
         const categoryColors = { 
-            'Makanan': '#3b82f6',       // Blue
-            'Transportasi': '#10b981',  // Emerald
-            'Tugas/Kuliah': '#8b5cf6',  // Violet
-            'Kos/Tagihan': '#f59e0b',   // Amber
-            'Hiburan': '#ec4899',       // Pink
-            'Lainnya': '#64748b'        // Slate
+            'Makanan': '#ec4899',       
+            'Transportasi': '#0ea5e9',  
+            'Tugas/Kuliah': '#22c55e',  
+            'Kos/Tagihan': '#ef4444',   
+            'Hiburan': '#f97316',       
+            'Investment': '#eab308',    
+            'Lainnya': '#64748b'        
         };
 
         const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+
+        window.openBaselineModal = function() {
+            const modal = document.getElementById('baseline-modal');
+            const content = document.getElementById('baseline-modal-content');
+            
+            document.getElementById('new-baseline-input').value = baselineLimit;
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.classList.add('opacity-100');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10); 
+        }
+
+        window.closeBaselineModal = function() {
+            const modal = document.getElementById('baseline-modal');
+            const content = document.getElementById('baseline-modal-content');
+            
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); 
+        }
+
+        window.saveBaseline = function() {
+            const newVal = document.getElementById('new-baseline-input').value;
+            if (newVal && newVal.trim() !== '') {
+                const parsed = parseInt(newVal);
+                if (!isNaN(parsed) && parsed > 0) {
+                    baselineLimit = parsed;
+                    localStorage.setItem('baselineLimit', baselineLimit);
+                    updateUI();
+                    closeBaselineModal();
+                } else {
+                    alert("Nominal yang dimasukkan tidak valid!");
+                }
+            }
+        }
 
         async function loadData() {
             try {
@@ -198,45 +321,112 @@
             saveData();
         }
 
-        function updateUI() {
-            const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-            document.getElementById('total-spent').innerText = formatRp(total);
-            document.getElementById('tx-count').innerText = `${expenses.length} Transaksi`;
+        window.applyFilter = function() {
+            currentFilter = document.getElementById('time-filter').value;
+            const customContainer = document.getElementById('custom-date-container');
+            
+            if (currentFilter === 'custom') {
+                customContainer.classList.remove('hidden');
+                customContainer.classList.add('flex');
+            } else {
+                customContainer.classList.add('hidden');
+                customContainer.classList.remove('flex');
+            }
+            updateUI();
+        }
+
+        function getFilteredData() {
+            if (currentFilter === 'all') return expenses;
+
+            const getStr = (d) => d.toISOString().split('T')[0];
+            const todayStr = getStr(new Date());
+            let startStr = '';
+
+            if (currentFilter === 'week') {
+                const d = new Date(); d.setDate(d.getDate() - 7);
+                startStr = getStr(d);
+            } else if (currentFilter === 'month') {
+                const d = new Date(); d.setMonth(d.getMonth() - 1);
+                startStr = getStr(d);
+            } else if (currentFilter === 'year') {
+                const d = new Date(); d.setFullYear(d.getFullYear() - 1);
+                startStr = getStr(d);
+            } else if (currentFilter === 'custom') {
+                startStr = document.getElementById('start-date').value;
+                const endStr = document.getElementById('end-date').value;
+                if (!startStr || !endStr) return expenses; 
+                return expenses.filter(e => e.date >= startStr && e.date <= endStr);
+            }
+
+            return expenses.filter(e => e.date >= startStr && e.date <= todayStr);
+        }
+
+        window.resetHistoryFilters = function() {
+            document.getElementById('search-history').value = '';
+            document.getElementById('date-history').value = '';
+            document.getElementById('sort-history').value = 'date-desc';
+            renderHistory();
+        }
+
+        window.renderHistory = function() {
+            const searchQuery = document.getElementById('search-history').value.toLowerCase();
+            const filterDate = document.getElementById('date-history').value;
+            const sortMode = document.getElementById('sort-history').value;
+            
+            let displayData = getFilteredData();
+            
+            if (searchQuery) {
+                displayData = displayData.filter(exp => 
+                    exp.description.toLowerCase().includes(searchQuery) || 
+                    exp.category.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            if (filterDate) {
+                displayData = displayData.filter(exp => exp.date === filterDate);
+            }
+            
+            displayData.sort((a, b) => {
+                if (sortMode === 'price-desc') return b.amount - a.amount;
+                if (sortMode === 'price-asc') return a.amount - b.amount;
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                if (sortMode === 'date-asc') {
+                    if (dateA - dateB === 0) return a.id - b.id; 
+                    return dateA - dateB;
+                }
+                if (dateB - dateA === 0) return b.id - a.id; 
+                return dateB - dateA; 
+            });
+
+            document.getElementById('tx-count').innerText = `${displayData.length} Data`;
 
             const historyDiv = document.getElementById('history-list');
             
-            if (expenses.length === 0) {
+            if (displayData.length === 0) {
                 historyDiv.innerHTML = `
-                    <div class="text-center py-12">
-                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-                            <i data-lucide="receipt" class="w-8 h-8 text-slate-300"></i>
-                        </div>
-                        <p class="text-slate-500 font-semibold">Belum ada pengeluaran.</p>
-                        <p class="text-slate-400 text-sm mt-1">Mulai catat jajan pertamamu hari ini!</p>
+                    <div class="col-span-full text-center py-8">
+                        <i data-lucide="search-x" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+                        <p class="text-slate-400 font-medium text-xs">Tidak ada data ditemukan.</p>
                     </div>`;
             } else {
-                const historyHTML = [...expenses].reverse().map(exp => {
+                const historyHTML = displayData.map(exp => {
                     const color = categoryColors[exp.category] || '#64748b';
-
                     const dateObj = new Date(exp.date);
-                    const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
                     
                     return `
-                    <div class="group flex justify-between items-center p-4 bg-white hover:bg-slate-50 border border-slate-100 rounded-2xl transition-all gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-2.5 h-10 rounded-full" style="background-color: ${color}"></div>
-                            <div>
-                                <p class="font-bold text-slate-800 text-[15px] leading-tight mb-1">${exp.description}</p>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[11px] font-semibold text-slate-500">${dateStr}</span>
-                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider" style="background-color: ${color}15; color: ${color}">${exp.category}</span>
-                                </div>
+                    <div class="group flex justify-between items-center p-3 hover:bg-slate-50 border border-slate-100 rounded-xl transition-all gap-2 h-14">
+                        <div class="flex items-center gap-2.5 w-full overflow-hidden">
+                            <div class="w-1.5 h-full min-h-[32px] rounded-full shrink-0" style="background-color: ${color}"></div>
+                            <div class="truncate">
+                                <p class="font-bold text-slate-800 text-[13px] leading-tight truncate">${exp.description}</p>
+                                <p class="text-[10px] font-semibold text-slate-500 mt-0.5 truncate">${dateStr} • <span style="color: ${color}">${exp.category}</span></p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <p class="font-black text-slate-800 text-[17px]">-${formatRp(exp.amount)}</p>
-                            <button onclick="deleteExpense(${exp.id})" class="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100">
+                        <div class="flex items-center gap-2 shrink-0">
+                            <p class="font-bold text-slate-800 text-[13px]">-${formatRp(exp.amount)}</p>
+                            <button onclick="deleteExpense(${exp.id})" class="text-slate-300 hover:text-rose-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 shrink-0">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -245,75 +435,140 @@
                 historyDiv.innerHTML = historyHTML;
             }
             lucide.createIcons();
+        }
 
-            const uniqueDays = new Set(expenses.map(e => e.date)).size || 1;
-            const avg = expenses.length > 0 ? Math.round(total / uniqueDays) : 0;
+        function updateUI() {
+            const filteredExpenses = getFilteredData();
+
+            const total = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+            document.getElementById('total-spent').innerText = formatRp(total);
+
+            renderHistory();
+
+            const uniqueDays = new Set(filteredExpenses.map(e => e.date)).size || 1;
+            const avg = filteredExpenses.length > 0 ? Math.round(total / uniqueDays) : 0;
             document.getElementById('daily-avg').innerText = formatRp(avg);
             
             const insightCard = document.getElementById('insight-card');
             const insightText = document.getElementById('insight-text');
             const iconContainer = document.getElementById('insight-icon-container');
             
-            if (avg > BASELINE) {
-                insightCard.className = "rounded-[2rem] p-7 shadow-sm border transition-colors duration-300 bg-rose-50 border-rose-100";
-                insightText.className = "text-sm mt-1 font-semibold text-rose-600";
-                insightText.innerText = `Kamu overbudget! Batas harian ${formatRp(BASELINE)}.`;
-                iconContainer.className = "p-3.5 rounded-2xl bg-rose-100 text-rose-600";
+            if (avg > baselineLimit) {
+                insightCard.className = "rounded-3xl p-4 shadow-sm border transition-colors duration-300 bg-rose-50 border-rose-100 relative group";
+                insightText.className = "text-[11px] mt-1 font-semibold text-rose-600";
+                insightText.innerText = `Overbudget! Batas: ${formatRp(baselineLimit)}`;
+                iconContainer.className = "p-2.5 rounded-xl bg-rose-100 text-rose-600";
                 document.getElementById('insight-icon').setAttribute('data-lucide', 'alert-circle');
             } else {
-                insightCard.className = "rounded-[2rem] p-7 shadow-sm border transition-colors duration-300 bg-emerald-50 border-emerald-100";
-                insightText.className = "text-sm mt-1 font-semibold text-emerald-600";
-                insightText.innerText = "Bagus! Pengeluaran masih di bawah batas aman.";
-                iconContainer.className = "p-3.5 rounded-2xl bg-emerald-100 text-emerald-600";
+                insightCard.className = "rounded-3xl p-4 shadow-sm border transition-colors duration-300 bg-emerald-50 border-emerald-100 relative group";
+                insightText.className = "text-[11px] mt-1 font-semibold text-emerald-600";
+                insightText.innerText = `Aman! Batas: ${formatRp(baselineLimit)}`;
+                iconContainer.className = "p-2.5 rounded-xl bg-emerald-100 text-emerald-600";
                 document.getElementById('insight-icon').setAttribute('data-lucide', 'check-circle-2');
             }
             lucide.createIcons(); 
 
-            updateCharts();
+            updateCharts(filteredExpenses, avg, total);
         }
 
-        function updateCharts() {
+        // --- RENDER PIE CHART DAN LEGEND CUSTOM ---
+        function updateCharts(filteredExpenses, currentAvg, totalSum) {
             const daily = {};
-            expenses.forEach(e => daily[e.date] = (daily[e.date] || 0) + e.amount);
+            filteredExpenses.forEach(e => daily[e.date] = (daily[e.date] || 0) + e.amount);
+            
             const labelsLine = Object.keys(daily).sort().map(d => {
                 const dt = new Date(d);
                 return `${dt.getDate()} ${dt.toLocaleString('id-ID', { month: 'short' })}`;
             });
             const dataLine = Object.keys(daily).sort().map(d => daily[d]);
-
+            
+            const baselineData = labelsLine.map(() => baselineLimit);
+            const avgData = labelsLine.map(() => currentAvg);
 
             const catData = {};
-            expenses.forEach(e => catData[e.category] = (catData[e.category] || 0) + e.amount);
-            const labelsPie = Object.keys(catData);
-            const dataPie = labelsPie.map(c => catData[c]);
+            filteredExpenses.forEach(e => catData[e.category] = (catData[e.category] || 0) + e.amount);
+            
+            // Urutkan data Pie Chart dari pengeluaran terbesar agar legendanya lebih masuk akal
+            const sortedCatEntries = Object.entries(catData).sort((a, b) => b[1] - a[1]);
+            const labelsPie = sortedCatEntries.map(e => e[0]);
+            const dataPie = sortedCatEntries.map(e => e[1]);
             const bgPie = labelsPie.map(c => categoryColors[c] || '#64748b');
+
+            // Render Legend Custom di Bawah Diagram Donut
+            const legendDiv = document.getElementById('pie-legend');
+            if (totalSum === 0) {
+                legendDiv.innerHTML = '<p class="text-xs text-slate-400 text-center col-span-2">Belum ada data kategori</p>';
+            } else {
+                legendDiv.innerHTML = sortedCatEntries.map(([cat, val]) => {
+                    const pct = ((val / totalSum) * 100).toFixed(1);
+                    const color = categoryColors[cat] || '#64748b';
+                    return `
+                    <div class="flex items-center justify-between bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100">
+                        <div class="flex items-center gap-1.5 overflow-hidden">
+                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${color}"></span>
+                            <span class="text-[10px] font-semibold text-slate-600 truncate">${cat}</span>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-800 ml-2">${pct}%</span>
+                    </div>`;
+                }).join('');
+            }
 
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = '#64748b';
+            Chart.defaults.font.size = 10; 
 
             if(lineChartInstance) lineChartInstance.destroy();
             lineChartInstance = new Chart(document.getElementById('lineChart'), {
                 type: 'line',
                 data: { 
                     labels: labelsLine, 
-                    datasets: [{ 
-                        label: 'Pengeluaran', 
-                        data: dataLine, 
-                        borderColor: '#6366f1', 
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#6366f1',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        fill: true,
-                        tension: 0.2 
-                    }] 
+                    datasets: [
+                        { 
+                            label: ` Batas (${formatRp(baselineLimit)})`, 
+                            data: baselineData, 
+                            borderColor: '#ef4444', 
+                            borderWidth: 1.5,
+                            borderDash: [4, 4], 
+                            pointRadius: 0, 
+                            fill: false,
+                            tension: 0
+                        },
+                        { 
+                            label: ` Rata-rata (${formatRp(currentAvg)})`, 
+                            data: avgData, 
+                            borderColor: '#f59e0b', 
+                            borderWidth: 1.5,
+                            borderDash: [4, 4], 
+                            pointRadius: 0, 
+                            fill: false,
+                            tension: 0
+                        },
+                        { 
+                            label: ' Pengeluaran', 
+                            data: dataLine, 
+                            borderColor: '#6366f1', 
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#6366f1',
+                            pointBorderWidth: 1.5,
+                            pointRadius: 3,
+                            fill: true,
+                            tension: 0.2 
+                        }
+                    ] 
                 },
                 options: { 
                     responsive: true,
                     maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { 
+                            display: true, 
+                            position: 'top', 
+                            align: 'end',
+                            labels: { usePointStyle: true, boxWidth: 6, font: {weight: 'bold'} } 
+                        } 
+                    },
                     scales: { 
                         y: { beginAtZero: true, border: {display: false}, grid: {color: '#f1f5f9'} },
                         x: { border: {display: false}, grid: {display: false} }
@@ -331,9 +586,9 @@
                 options: { 
                     responsive: true,
                     maintainAspectRatio: false, 
-                    cutout: '75%', 
+                    cutout: '70%', // Bolongan donut dilebarkan lagi karena legendnya udah di luar
                     plugins: { 
-                        legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, padding: 15, font: {size: 11, weight: 'bold'} } }
+                        legend: { display: false } // Matikan legend bawaan chart.js
                     }
                 }
             });
@@ -345,11 +600,11 @@
                     await fetch('/api/shutdown', { method: 'POST' });
                     document.body.innerHTML = `
                         <div class="flex flex-col h-screen items-center justify-center bg-slate-50 space-y-4">
-                            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center border-4 border-white shadow-sm">
-                                <i data-lucide="power" class="w-10 h-10"></i>
+                            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center border-4 border-white shadow-sm">
+                                <i data-lucide="power" class="w-8 h-8"></i>
                             </div>
-                            <h1 class="text-2xl font-bold text-slate-800">Server Berhasil Dimatikan</h1>
-                            <p class="text-slate-500 font-medium">Silakan tutup tab browser ini.</p>
+                            <h1 class="text-xl font-bold text-slate-800">Server Berhasil Dimatikan</h1>
+                            <p class="text-slate-500 text-sm font-medium">Silakan tutup tab browser ini.</p>
                         </div>`;
                     lucide.createIcons();
                 } catch(e) { console.error("Gagal mematikan", e); }

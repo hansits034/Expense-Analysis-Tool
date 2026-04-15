@@ -47,4 +47,3 @@ def shutdown():
 if __name__ == '__main__':
     # Jalankan di localhost port 3000
     app.run(port=3000)
-    
